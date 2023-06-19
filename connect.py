@@ -3,11 +3,13 @@ import os
 import cv2
 from dotenv import load_dotenv
 import time
+import numpy as np
 
 from viam.robot.client import RobotClient
 from viam.rpc.dial import Credentials, DialOptions
 from viam.components.arm import Arm
 from viam.components.camera import Camera
+from viam.media.video import RawImage
 
 
 async def connect():
@@ -29,7 +31,6 @@ async def main():
 
     print('Resources:')
     print(robot.resource_names)
-    
 
     # right
     right = Camera.from_robot(robot, "right")
@@ -38,8 +39,15 @@ async def main():
     
     # left
     left = Camera.from_robot(robot, "left")
-    left_return_value = await left.get_image()
+    left_return_value = await left.get_image(mime_type="image/png")
+    if isinstance(left_return_value,RawImage):
+        print("Rawimg returned")
+        exit(1)
+    limg = left_return_value.convert('RGB')
+    open_cv_image = np.array(limg)
+    open_cv_image = open_cv_image[:, :, ::-1].copy() 
     print(f"left get_image return value: {left_return_value}")
+    cv2.imwrite("./out/test.png", open_cv_image)
 
     await robot.close()
 
@@ -64,5 +72,6 @@ async def benchmark_camera_fps():
 
 if __name__ == '__main__':
     load_dotenv()
+    os.makedirs( "./out", exist_ok=True)
     asyncio.run(main())
 
