@@ -1,0 +1,32 @@
+{
+  "components": [
+    {
+      "name": "UR",
+      "type": "arm",
+      "model": "ur5e",
+      "attributes": {
+        "speed_degs_per_sec": 1,
+        "host": "10.1.10.82"
+      },
+      "depends_on": []
+    },
+    {
+      "name": "right",
+      "type": "camera",
+      "model": "webcam",
+      "attributes": {
+        "video_path": "usb-EMEET_HD_Webcam_eMeet_C950_A230322000300303-video-index0"
+      },
+      "depends_on": []
+    },
+    {
+      "name": "left",
+      "type": "camera",
+      "model": "webcam",
+      "attributes": {
+        "video_path": "usb-EMEET_HD_Webcam_eMeet_C950_A230322000310769-video-index0"
+      },
+      "depends_on": []
+    }
+  ]
+}
