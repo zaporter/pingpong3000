@@ -1,10 +1,8 @@
-{pkgs ? import <nixpkgs> {}}: let
-  opencvGtk = pkgs.opencv.override (old: {enableGtk2 = true;});
-in
+{pkgs ? import <nixpkgs> {}}: 
   pkgs.mkShell {
     NIX_SHELL_NAME = "pingpong3000";
     buildInputs = with pkgs; [
-      opencvGtk
+      opencv
       python310Packages.opencv4
       stdenv.cc.cc.lib
     ];

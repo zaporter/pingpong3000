@@ -45,11 +45,41 @@ async def main():
         exit(1)
     limg = left_return_value.convert('RGB')
     open_cv_image = np.array(limg)
+    # convert to BGR
     open_cv_image = open_cv_image[:, :, ::-1].copy() 
     print(f"left get_image return value: {left_return_value}")
-    cv2.imwrite("./out/test.png", open_cv_image)
+    lower_red = np.array([100,100,200])
+    upper_red = np.array([230,190,255])
+    mask = cv2.inRange(open_cv_image, lower_red, upper_red)
+    res = cv2.bitwise_and(open_cv_image, open_cv_image, mask=mask)
+    res = cluster(res)
+    cv2.imwrite("./out/test.png", res)
 
     await robot.close()
+
+def cluster(im):
+    grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+
+# Threshold (in case we do morphology) and invert
+    _, thresh = cv2.threshold(grey, 200, 255, cv2.THRESH_BINARY_INV)
+    cv2.imwrite('DEBUG-thresh.png', thresh)
+
+# Prepare to do some K-means
+# https://docs.opencv.org/4.x/d1/d5c/tutorial_py_kmeans_opencv.html
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+# Find x,y coordinates of all non-white pixels in original image
+    Y, X = np.where(thresh==0)
+    Z = np.column_stack((X,Y)).astype(np.float32)
+
+    nClusters = 3
+    ret,label,center=cv2.kmeans(Z,nClusters,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
+
+# Mark and display cluster centres 
+    for x,y in center:
+        print(f'Cluster centre: [{int(x)},{int(y)}]')
+        cv2.drawMarker(im, (int(x), int(y)), [0,0,255])
+    return im
+
 
 async def benchmark_camera_fps():
     robot = await connect()
