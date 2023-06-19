@@ -1,5 +1,6 @@
 import asyncio
 import os
+import cv2
 from dotenv import load_dotenv
 import time
 

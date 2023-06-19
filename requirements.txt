@@ -1,4 +1,6 @@
 viam-sdk
+pupil-apriltags
+opencv-python==4.7.*
 python-dotenv==1.0.0
 viam-sdk==0.2.17
 pillow==9.5.0
